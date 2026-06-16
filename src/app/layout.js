@@ -1,5 +1,7 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import StudyNookNavbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -19,7 +21,17 @@ export default function RootLayout({ children }) {
       lang="en"
       className={poppins.className}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <header>
+         <StudyNookNavbar></StudyNookNavbar>
+        </header>
+        <main>
+          {children}
+        </main>
+        <footer>
+          <Footer></Footer>
+        </footer>
+        </body>
     </html>
   );
 }
