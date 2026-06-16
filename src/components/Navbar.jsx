@@ -71,22 +71,19 @@ export default function Navbar() {
           
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Button
-              as={Link}
+            <Link
               href="/login"
               variant="light"
               radius="sm"
             >
               Login
-            </Button>
+            </Link>
 
             <Button
-              as={Link}
-              href="/register"
               color="primary"
               radius="sm"
             >
-              Register
+              <Link href={'/register'}>Register</Link>
             </Button>
           </div>
 
