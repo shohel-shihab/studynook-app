@@ -3,11 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@heroui/react";
+import { Button, Avatar, Dropdown, Label } from "@heroui/react";
+import { authClient } from "@/lib/auth-client";
+import { GiEarbuds } from "react-icons/gi";
+import { BsPersonSlash } from "react-icons/bs";
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const {
+    data: session
+  } = authClient.useSession()
+  const user = session?.user;
+  console.log(user)
 
   const navItems = [
     {
@@ -35,7 +44,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8">
-        
+
         {/* Logo */}
         <Link
           href="/"
@@ -50,11 +59,10 @@ export default function Navbar() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`relative text-sm font-medium transition-colors ${
-                  isActive(item.href)
-                    ? "text-teal-700"
-                    : "text-gray-600 hover:text-teal-700"
-                }`}
+                className={`relative text-sm font-medium transition-colors ${isActive(item.href)
+                  ? "text-teal-700"
+                  : "text-gray-600 hover:text-teal-700"
+                  }`}
               >
                 {item.label}
 
@@ -67,8 +75,8 @@ export default function Navbar() {
         </ul>
 
         {/* Right Side */}
-        <div className="flex items-center gap-3">
-          
+      { !user && <div className="flex items-center gap-3">
+
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
             <Link
@@ -123,16 +131,74 @@ export default function Navbar() {
               </svg>
             )}
           </button>
-        </div>
+        </div>}
+        {user && <div>
+          <Dropdown>
+            <Dropdown.Trigger className="rounded-full">
+              <Avatar>
+                <Avatar.Image
+                  alt="Junior Garcia"
+                  src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg"
+                />
+                <Avatar.Fallback delayMs={600}>JD</Avatar.Fallback>
+              </Avatar>
+            </Dropdown.Trigger>
+            <Dropdown.Popover>
+              <div className="px-3 pt-3 pb-1">
+                <div className="flex items-center gap-2">
+                  <Avatar size="sm">
+                    <Avatar.Image
+                      alt="Jane"
+                      src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg"
+                    />
+                    <Avatar.Fallback delayMs={600}>JD</Avatar.Fallback>
+                  </Avatar>
+                  <div className="flex flex-col gap-0">
+                    <p className="text-sm leading-5 font-medium">Jane Doe</p>
+                    <p className="text-xs leading-none text-muted">jane@example.com</p>
+                  </div>
+                </div>
+              </div>
+              <Dropdown.Menu>
+                <Dropdown.Item id="dashboard" textValue="Dashboard">
+                  <Label>Dashboard</Label>
+                </Dropdown.Item>
+                <Dropdown.Item id="profile" textValue="Profile">
+                  <Label>Profile</Label>
+                </Dropdown.Item>
+                <Dropdown.Item id="settings" textValue="Settings">
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <Label>Settings</Label>
+                    <GiEarbuds className="size-3.5 text-muted" />
+                  </div>
+                </Dropdown.Item>
+                <Dropdown.Item id="new-project" textValue="New project">
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <Label>Create Team</Label>
+                    <BsPersonSlash className="size-3.5 text-muted" />
+                  </div>
+                </Dropdown.Item>
+                <Dropdown.Item id="logout" textValue="Logout" variant="danger">
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <Label>Log Out</Label>
+                    <FaArrowUpRightFromSquare className="size-3.5 text-danger" />
+                  </div>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
+          </Dropdown>
+        </div>}
       </div>
+      {/* dropdown menu  */}
+
+
 
       {/* Mobile Menu */}
       <div
-        className={`overflow-hidden transition-all duration-300 md:hidden ${
-          isMenuOpen
-            ? "max-h-[500px] border-t border-gray-200"
-            : "max-h-0"
-        }`}
+        className={`overflow-hidden transition-all duration-300 md:hidden ${isMenuOpen
+          ? "max-h-[500px] border-t border-gray-200"
+          : "max-h-0"
+          }`}
       >
         <div className="space-y-1 p-4">
           {navItems.map((item) => (
@@ -140,11 +206,10 @@ export default function Navbar() {
               key={item.href}
               href={item.href}
               onClick={() => setIsMenuOpen(false)}
-              className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                isActive(item.href)
-                  ? "bg-teal-50 text-teal-700"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
+              className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${isActive(item.href)
+                ? "bg-teal-50 text-teal-700"
+                : "text-gray-700 hover:bg-gray-100"
+                }`}
             >
               {item.label}
             </Link>
