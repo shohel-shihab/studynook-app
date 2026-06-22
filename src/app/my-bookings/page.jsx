@@ -11,7 +11,7 @@ export default async function MyBookings() {
     })
     const user = session?.user;
 
-    const res = await fetch(`http://localhost:5000/booking/${user.id}`)
+    const res = await fetch(`http://localhost:5000/booking/${user?.id}`)
     const bookings = await res.json();
 
     const bookingDate = new Date(bookings.bookingDate);

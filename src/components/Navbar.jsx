@@ -40,6 +40,14 @@ export default function Navbar() {
       href: "/rooms",
     },
     {
+      label: "My Bookings",
+      href: "/my-bookings",
+    },
+    {
+      label: "My Listings",
+      href: "/my-listings",
+    },
+    {
       label: "Resources",
       href: "/resources",
     },
