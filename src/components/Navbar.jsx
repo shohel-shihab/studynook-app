@@ -2,21 +2,29 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button, Avatar, Dropdown, Label } from "@heroui/react";
 import { authClient } from "@/lib/auth-client";
-import { GiEarbuds } from "react-icons/gi";
-import { BsPersonSlash } from "react-icons/bs";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router =useRouter();
   const {
     data: session
   } = authClient.useSession()
   const user = session?.user;
-  console.log(user)
+
+  const handeLogOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login");
+        },
+      },
+    });
+  }
 
   const navItems = [
     {
@@ -24,8 +32,8 @@ export default function Navbar() {
       href: "/",
     },
     {
-      label: "My Bookings",
-      href: "/bookings",
+      label: "Add Room",
+      href: "/add-room",
     },
     {
       label: "Resources",
@@ -75,7 +83,7 @@ export default function Navbar() {
         </ul>
 
         {/* Right Side */}
-      { !user && <div className="flex items-center gap-3">
+        {!user && <div className="flex items-center gap-3">
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
@@ -138,7 +146,7 @@ export default function Navbar() {
               <Avatar>
                 <Avatar.Image
                   alt="Junior Garcia"
-                  src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg"
+                  src={user?.image}
                 />
                 <Avatar.Fallback delayMs={600}>JD</Avatar.Fallback>
               </Avatar>
@@ -146,16 +154,10 @@ export default function Navbar() {
             <Dropdown.Popover>
               <div className="px-3 pt-3 pb-1">
                 <div className="flex items-center gap-2">
-                  <Avatar size="sm">
-                    <Avatar.Image
-                      alt="Jane"
-                      src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg"
-                    />
-                    <Avatar.Fallback delayMs={600}>JD</Avatar.Fallback>
-                  </Avatar>
+
                   <div className="flex flex-col gap-0">
-                    <p className="text-sm leading-5 font-medium">Jane Doe</p>
-                    <p className="text-xs leading-none text-muted">jane@example.com</p>
+                    <p className="text-sm leading-5 font-medium">{user?.name}</p>
+                    <p className="text-xs leading-none text-muted">{user?.email}</p>
                   </div>
                 </div>
               </div>
@@ -166,19 +168,7 @@ export default function Navbar() {
                 <Dropdown.Item id="profile" textValue="Profile">
                   <Label>Profile</Label>
                 </Dropdown.Item>
-                <Dropdown.Item id="settings" textValue="Settings">
-                  <div className="flex w-full items-center justify-between gap-2">
-                    <Label>Settings</Label>
-                    <GiEarbuds className="size-3.5 text-muted" />
-                  </div>
-                </Dropdown.Item>
-                <Dropdown.Item id="new-project" textValue="New project">
-                  <div className="flex w-full items-center justify-between gap-2">
-                    <Label>Create Team</Label>
-                    <BsPersonSlash className="size-3.5 text-muted" />
-                  </div>
-                </Dropdown.Item>
-                <Dropdown.Item id="logout" textValue="Logout" variant="danger">
+                <Dropdown.Item onClick={handeLogOut} id="logout" textValue="Logout" variant="danger">
                   <div className="flex w-full items-center justify-between gap-2">
                     <Label>Log Out</Label>
                     <FaArrowUpRightFromSquare className="size-3.5 text-danger" />
