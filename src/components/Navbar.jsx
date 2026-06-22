@@ -36,6 +36,10 @@ export default function Navbar() {
       href: "/add-room",
     },
     {
+      label: "Rooms",
+      href: "/rooms",
+    },
+    {
       label: "Resources",
       href: "/resources",
     },
