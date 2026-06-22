@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function AddRoomPage() {
   const [capacity, setCapacity] = useState(4);
@@ -29,14 +30,34 @@ export default function AddRoomPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const pageInfo = Object.fromEntries(formData.entries());
-   
+    const form = e.currentTarget;
+
     const roomData = {
       ...pageInfo,
       capacity,
       amenities: selectedAmenities,
       hourlyRate: Number(pageInfo.hourlyRate),
     };
-     console.log(roomData);
+
+    try {
+      const res = await fetch("http://localhost:5000/rooms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(roomData),
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.success) {
+        toast.success("Room added successfully!");
+        form.reset();
+        setCapacity(4);
+        setSelectedAmenities([]);
+      }
+    }catch (error) {
+      toast.error("Failed to add room!");
+    }
 
   };
 
@@ -186,8 +207,8 @@ export default function AddRoomPage() {
                   type="button"
                   onClick={() => toggleAmenity(amenity)}
                   className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all ${selectedAmenities.includes(amenity)
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "border-slate-300 hover:border-indigo-500"
+                    ? "bg-indigo-600 text-white border-indigo-600"
+                    : "border-slate-300 hover:border-indigo-500"
                     }`}
                 >
                   {amenity}
