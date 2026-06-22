@@ -10,7 +10,7 @@ import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const router =useRouter();
+  const router = useRouter();
   const {
     data: session
   } = authClient.useSession()
@@ -28,29 +28,30 @@ export default function Navbar() {
 
   const navItems = [
     {
-      label: "Find a Room",
+      label: "Home",
       href: "/",
-    },
-    {
-      label: "Add Room",
-      href: "/add-room",
     },
     {
       label: "Rooms",
       href: "/rooms",
     },
-    {
-      label: "My Bookings",
-      href: "/my-bookings",
-    },
-    {
-      label: "My Listings",
-      href: "/my-listings",
-    },
-    {
-      label: "Resources",
-      href: "/resources",
-    },
+
+    ...(user
+      ? [
+        {
+          label: "Add Room",
+          href: "/add-room",
+        },
+        {
+          label: "My Bookings",
+          href: "/my-bookings",
+        },
+        {
+          label: "My Listings",
+          href: "/my-listings",
+        },
+      ]
+      : []),
   ];
 
   const isActive = (href) => {
