@@ -4,11 +4,60 @@ import {
   FaWifi,
   FaUsers,
   FaBuilding,
-  
+
 } from "react-icons/fa";
 import BookingCard from "./BookingCard";
+import ManageRoomCard from "./ManageRoomCard";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 export default function RoomDetails({ room }) {
+  const router=useRouter();
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Delete Room?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6366f1",
+      confirmButtonText: "Yes, Delete It",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/rooms/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.deletedCount > 0) {
+        await Swal.fire({
+          title: "Deleted!",
+          text: "Room deleted successfully.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        router.push("/rooms");
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "Failed to delete room.",
+        icon: "error",
+      });
+    }
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4">
@@ -71,7 +120,10 @@ export default function RoomDetails({ room }) {
           </div>
 
           {/* Right */}
-         <BookingCard room={room}></BookingCard>
+          <div className="flex flex-col gap-2">
+            <div className="mb-b"> <ManageRoomCard room={room} handleDelete={handleDelete}></ManageRoomCard></div>
+            <BookingCard room={room}></BookingCard>
+          </div>
         </div>
       </div>
     </div>

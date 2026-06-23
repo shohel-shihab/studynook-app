@@ -1,12 +1,19 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function AddRoomPage() {
   const [capacity, setCapacity] = useState(4);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
-
+  const router = useRouter();
+  const {
+    data: session,
+  } = authClient.useSession()
+  const user =session?.user;
+  console.log(user)
   const amenities = [
     "WiFi",
     "Projector",
@@ -35,6 +42,7 @@ export default function AddRoomPage() {
     const roomData = {
       ...pageInfo,
       capacity,
+      userId:user?.id,
       amenities: selectedAmenities,
       hourlyRate: Number(pageInfo.hourlyRate),
     };
@@ -54,8 +62,9 @@ export default function AddRoomPage() {
         form.reset();
         setCapacity(4);
         setSelectedAmenities([]);
+        router.push("/rooms");
       }
-    }catch (error) {
+    } catch (error) {
       toast.error("Failed to add room!");
     }
 
