@@ -5,9 +5,9 @@ import { motion } from "motion/react";
 import { FaStar, FaWifi, FaArrowRight, FaTv } from "react-icons/fa";
 import { MdMeetingRoom } from "react-icons/md";
 import { HiUsers } from "react-icons/hi2";
+import Link from "next/link";
 
 export default function FeatureCard({ feature }) {
-    console.log(feature)
     return (
         <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -87,7 +87,7 @@ export default function FeatureCard({ feature }) {
                         whileTap={{ scale: 0.95 }}
                         className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-4 font-semibold text-white"
                     >
-                        View Details
+                        <Link href={`/rooms/${feature._id}`}>View Details</Link>
                         <FaArrowRight />
                     </motion.button>
                 </div>

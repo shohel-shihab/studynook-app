@@ -114,13 +114,11 @@ export default function Banner() {
                                 }}
                             >
                                 <Button
-                                    as={Link}
-                                    href="/rooms"
                                     color="primary"
                                     size="lg"
                                     radius="sm"
                                 >
-                                    Explore Rooms
+                                    <Link  href="/rooms">Explore Rooms</Link>
                                 </Button>
                             </motion.div>
 
