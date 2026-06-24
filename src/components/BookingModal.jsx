@@ -3,6 +3,7 @@
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import DeleteRoomButton from "./DeleteRoomButton";
+import BookRoomModal from "./BookRoomModal";
 
 export default function BookingModal({ room }) {
   const { data: session } = authClient.useSession();
@@ -21,9 +22,7 @@ export default function BookingModal({ room }) {
           Login to Book
         </Link>
       ) : (
-        <button className="bg-blue-500 text-white px-6 py-3 rounded-lg">
-          Book Now
-        </button>
+       <BookRoomModal room={room} />
       )}
 
       {/* Owner Controls */}
