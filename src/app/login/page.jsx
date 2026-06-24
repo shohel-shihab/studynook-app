@@ -68,7 +68,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSign = async () => {
     try {
       setGoogleLoading(true);
 
@@ -183,9 +183,10 @@ export default function LoginPage() {
         {/* Google Login */}
         <Button
           variant="bordered"
+          type="submit"
           size="lg"
           className="w-full"
-          onPress={handleGoogleLogin}
+          onPress={handleGoogleSign}
           isLoading={googleLoading}
         >
           Continue with Google

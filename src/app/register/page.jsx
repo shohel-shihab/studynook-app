@@ -102,7 +102,7 @@ export default function RegisterPage() {
     }
   };
 
-  const handleGoogleRegister = async () => {
+  const handleGoogleSign = async () => {
     try {
       setGoogleLoading(true);
 
@@ -258,10 +258,11 @@ export default function RegisterPage() {
 
         {/* Google Button */}
         <Button
+        type="submit"
           variant="bordered"
           size="lg"
           className="w-full"
-          onPress={handleGoogleRegister}
+          onClick={handleGoogleSign}
           isLoading={googleLoading}
         >
           Continue with Google
