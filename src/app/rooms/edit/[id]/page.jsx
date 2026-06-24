@@ -1,11 +1,22 @@
-import React from 'react'
+import EditRoomForm from "@/components/EditRoomForm";
 
-const EditPage = () => {
-  return (
-    <div>
-      <h2>Edit Page</h2>
-    </div>
-  )
+export default async function EditRoomPage({ params }) {
+    const {id} = await params;
+    const res = await fetch(
+        `http://localhost:5000/rooms/${id}`,
+        {
+            cache: "no-store",
+        }
+    );
+    const room= await res.json();
+
+    return (
+        <div className="max-w-4xl mx-auto py-10 px-4">
+            <h1 className="text-3xl font-bold mb-6">
+                Edit Room
+            </h1>
+
+            <EditRoomForm room={room} />
+        </div>
+    );
 }
-
-export default EditPage

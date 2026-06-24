@@ -1,195 +1,178 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import {
-    FaSearch,
-    FaStar,
-    FaUsers,
-    FaBuilding,
-    FaArrowRight,
-    FaWifi,
-} from "react-icons/fa";
-import Link from "next/link";
 import RoomCard from "@/components/RoomCard";
 
+const amenitiesOptions = [
+  "Wi-Fi",
+  "Projector",
+  "Whiteboard",
+  "Air Conditioning",
+  "Power Outlets",
+  "Quiet Zone",
+  "Soundproofed",
+];
+
 export default function RoomsPage() {
-    const [rooms, setRooms] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const [search, setSearch] = useState("");
-    const [minPrice, setMinPrice] = useState("");
-    const [maxPrice, setMaxPrice] = useState("");
-    const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const [search, setSearch] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
 
-    const amenitiesList = [
-        "WiFi",
-        "Projector",
-        "Whiteboard",
-        "Air Conditioning",
-        "Smart TV",
-        "Quiet Zone",
-    ];
+  const fetchRooms = async () => {
+    setLoading(true);
 
-    const toggleAmenity = (amenity) => {
-        setSelectedAmenities((prev) =>
-            prev.includes(amenity)
-                ? prev.filter((item) => item !== amenity)
-                : [...prev, amenity]
-        );
-    };
+    const params = new URLSearchParams();
 
-    const fetchRooms = async () => {
-        try {
-            setLoading(true);
+    if (search) params.append("search", search);
+    if (minPrice) params.append("minPrice", minPrice);
+    if (maxPrice) params.append("maxPrice", maxPrice);
 
-            const params = new URLSearchParams();
-
-            if (search) params.append("search", search);
-            if (minPrice) params.append("minPrice", minPrice);
-            if (maxPrice) params.append("maxPrice", maxPrice);
-
-            if (selectedAmenities.length > 0) {
-                params.append(
-                    "amenities",
-                    selectedAmenities.join(",")
-                );
-            }
-
-            const res = await fetch(
-                `http://localhost:5000/rooms?${params.toString()}`,
-                {
-                    cache: "no-store",
-                }
-            );
-
-            const data = await res.json();
-
-            setRooms(data);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchRooms();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex justify-center items-center">
-                <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
+    if (selectedAmenities.length > 0) {
+      params.append(
+        "amenities",
+        selectedAmenities.join(",")
+      );
     }
 
-    return (
-        <div className="min-h-screen bg-slate-50">
-            {/* Hero */}
-            <section className="bg-gradient-to-r from-indigo-600 to-violet-600 py-20">
-                <div className="max-w-7xl mx-auto px-4">
-                    <h1 className="text-5xl font-bold text-white mb-4">
-                        Explore Study Rooms
-                    </h1>
-
-                    <p className="text-indigo-100">
-                        Discover modern study spaces and meeting rooms.
-                    </p>
-                </div>
-            </section>
-
-            <div className="max-w-7xl mx-auto px-4 py-10">
-                {/* Filter */}
-                <div className="bg-white rounded-3xl shadow-lg p-6 mb-10">
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label className="block mb-2 font-medium">
-                                Search Room
-                            </label>
-
-                            <div className="relative">
-                                <FaSearch className="absolute left-4 top-4 text-gray-400" />
-
-                                <input
-                                    type="text"
-                                    placeholder="Room name..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full border rounded-xl py-3 pl-10 pr-4"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block mb-2 font-medium">
-                                Min Price
-                            </label>
-
-                            <input
-                                type="number"
-                                value={minPrice}
-                                onChange={(e) => setMinPrice(e.target.value)}
-                                className="w-full border rounded-xl py-3 px-4"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block mb-2 font-medium">
-                                Max Price
-                            </label>
-
-                            <input
-                                type="number"
-                                value={maxPrice}
-                                onChange={(e) => setMaxPrice(e.target.value)}
-                                className="w-full border rounded-xl py-3 px-4"
-                            />
-                        </div>
-
-                        <div className="flex items-end">
-                            <button
-                                onClick={fetchRooms}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl"
-                            >
-                                Apply Filters
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-3 mt-6">
-                        {amenitiesList.map((amenity) => (
-                            <button
-                                key={amenity}
-                                onClick={() => toggleAmenity(amenity)}
-                                className={`px-4 py-2 rounded-full border ${selectedAmenities.includes(amenity)
-                                    ? "bg-indigo-600 text-white"
-                                    : ""
-                                    }`}
-                            >
-                                {amenity}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Empty State */}
-                {rooms.length === 0 && (
-                    <div className="text-center py-20">
-                        <h2 className="text-3xl font-bold">
-                            No Rooms Found
-                        </h2>
-                    </div>
-                )}
-
-                {/* Cards */}
-                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {rooms.map((room) => (
-                        <RoomCard key={room._id} room={room}></RoomCard>
-                    ))}
-                </div>
-            </div>
-        </div>
+    const res = await fetch(
+      `http://localhost:5000/rooms?${params.toString()}`
     );
+
+    const data = await res.json();
+
+    setRooms(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+
+  const handleAmenityChange = (amenity) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenity)
+        ? prev.filter((item) => item !== amenity)
+        : [...prev, amenity]
+    );
+  };
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 py-12">
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold">
+          Available Study Rooms
+        </h1>
+
+        <p className="text-gray-500 mt-2">
+          Find the perfect room for your study session.
+        </p>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white border rounded-2xl p-6 mb-10 shadow-sm">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <input
+            type="text"
+            placeholder="Search room name..."
+            value={search}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
+            className="border rounded-lg px-4 py-3"
+          />
+
+          <input
+            type="number"
+            placeholder="Min Price"
+            value={minPrice}
+            onChange={(e) =>
+              setMinPrice(e.target.value)
+            }
+            className="border rounded-lg px-4 py-3"
+          />
+
+          <input
+            type="number"
+            placeholder="Max Price"
+            value={maxPrice}
+            onChange={(e) =>
+              setMaxPrice(e.target.value)
+            }
+            className="border rounded-lg px-4 py-3"
+          />
+
+          <button
+            onClick={fetchRooms}
+            className="bg-black text-white rounded-lg px-6 py-3 hover:bg-gray-800"
+          >
+            Apply Filter
+          </button>
+        </div>
+
+        {/* Amenities */}
+        <div className="mt-6">
+          <h3 className="font-semibold mb-3">
+            Amenities
+          </h3>
+
+          <div className="flex flex-wrap gap-4">
+            {amenitiesOptions.map((amenity) => (
+              <label
+                key={amenity}
+                className="flex items-center gap-2"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedAmenities.includes(
+                    amenity
+                  )}
+                  onChange={() =>
+                    handleAmenityChange(amenity)
+                  }
+                />
+
+                <span>{amenity}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Rooms */}
+      {loading ? (
+        <div className="text-center py-20">
+          Loading rooms...
+        </div>
+      ) : rooms.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24">
+          <h2 className="text-2xl font-semibold mb-2">
+            No rooms found 😢
+          </h2>
+
+          <p className="text-gray-500">
+            Try adjusting your filters.
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className="mb-6 text-gray-500">
+            {rooms.length} room(s) found
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rooms.map((room) => (
+              <RoomCard
+                key={room._id}
+                room={room}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </section>
+  );
 }

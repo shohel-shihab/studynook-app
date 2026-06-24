@@ -1,79 +1,45 @@
-
-import { motion } from "framer-motion";
+"use client"
+import Image from "next/image";
 import Link from "next/link";
-import { FaArrowRight, FaBuilding, FaStar, FaUsers, FaWifi } from "react-icons/fa";
-const RoomCard = ({room}) => {
+
+export default function RoomCard({ room }) {
     return (
-        <div>
-            <motion.div
-                key={room._id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -10 }}
-                className="bg-white rounded-3xl overflow-hidden shadow-lg"
-            >
-                <img
+        <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition">
+            <div className="relative h-56 w-full">
+                <Image
                     src={room.image}
                     alt={room.roomName}
-                    className="w-full h-64 object-cover"
+                    fill
+                    className="object-cover"
                 />
+            </div>
 
-                <div className="p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                        <FaStar className="text-yellow-400" />
-                        <span>{room.rating || 4.8}</span>
-                    </div>
+            <div className="p-5">
+                <h3 className="text-xl font-bold mb-2">
+                    {room.roomName}
+                </h3>
 
-                    <h2 className="text-xl font-bold mb-4">
-                        {room.roomName}
-                    </h2>
+                <p className="text-gray-500 text-sm line-clamp-2 mb-4">
+                    {room.description}
+                </p>
 
-                    <div className="space-y-2 text-gray-600">
-                        <div className="flex items-center gap-2">
-                            <FaBuilding />
-                            {room.floor}
-                        </div>
+                <div className="flex justify-between items-center mb-4">
+                    <span className="font-semibold">
+                        Capacity: {room.capacity}
+                    </span>
 
-                        <div className="flex items-center gap-2">
-                            <FaUsers />
-                            Capacity: {room.capacity}
-                        </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 mt-4">
-                        {room.amenities?.map((amenity) => (
-                            <span
-                                key={amenity}
-                                className="flex items-center gap-1 bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs"
-                            >
-                                <FaWifi size={10} />
-                                {amenity}
-                            </span>
-                        ))}
-                    </div>
-
-                    <div className="mt-6 flex justify-between items-center">
-                        <div>
-                            <h3 className="text-2xl font-bold text-indigo-600">
-                                ${room.hourlyRate}
-                            </h3>
-
-                            <p className="text-sm text-gray-500">
-                                per hour
-                            </p>
-                        </div>
-
-                        <Link href={`/rooms/${room._id}`}>
-                            <button className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-3 rounded-xl">
-                                View Details
-                                <FaArrowRight />
-                            </button>
-                        </Link>
-                    </div>
+                    <span className="text-blue-600 font-bold">
+                        ${room.hourlyRate}/hr
+                    </span>
                 </div>
-            </motion.div>
-        </div>
-    )
-}
 
-export default RoomCard
+                <Link
+                    href={`/rooms/${room._id}`}
+                    className="w-full block text-center bg-black text-white py-2 rounded-lg hover:bg-gray-800"
+                >
+                    View Details
+                </Link>
+            </div>
+        </div>
+    );
+}

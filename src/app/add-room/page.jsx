@@ -6,23 +6,21 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function AddRoomPage() {
+  const router = useRouter();
+
   const [capacity, setCapacity] = useState(4);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
-  const router = useRouter();
-  const {
-    data: session,
-  } = authClient.useSession()
-  const user =session?.user;
-  console.log(user)
+
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
   const amenities = [
-    "WiFi",
-    "Projector",
     "Whiteboard",
-    "Air Conditioning",
+    "Projector",
+    "Wi-Fi",
     "Power Outlets",
     "Quiet Zone",
-    "Smart TV",
-    "Video Conference Setup",
+    "Air Conditioning",
   ];
 
   const toggleAmenity = (amenity) => {
@@ -35,16 +33,29 @@ export default function AddRoomPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const pageInfo = Object.fromEntries(formData.entries());
+
+    if (!user) {
+      toast.error("Please login first");
+      return;
+    }
+
     const form = e.currentTarget;
+    const formData = new FormData(form);
+    const pageInfo = Object.fromEntries(formData.entries());
 
     const roomData = {
-      ...pageInfo,
-      capacity,
-      userId:user?.id,
-      amenities: selectedAmenities,
+      roomName: pageInfo.roomName,
+      description: pageInfo.description,
+      image: pageInfo.image,
+      floor: pageInfo.floor,
+      capacity: Number(capacity),
       hourlyRate: Number(pageInfo.hourlyRate),
+      amenities: selectedAmenities,
+      ownerId: user.id,
+      ownerName: user.name,
+      ownerEmail: user.email,
+      createdAt: new Date(),
+      bookingCount: 0,
     };
 
     try {
@@ -55,25 +66,31 @@ export default function AddRoomPage() {
         },
         body: JSON.stringify(roomData),
       });
+
+      if (!res.ok) {
+        throw new Error("Failed to add room");
+      }
+
       const data = await res.json();
-      console.log(data);
+
       if (data.success) {
-        toast.success("Room added successfully!");
+        toast.success("Room added successfully");
+
         form.reset();
         setCapacity(4);
         setSelectedAmenities([]);
+
         router.push("/rooms");
       }
     } catch (error) {
-      toast.error("Failed to add room!");
+      console.error(error);
+      toast.error("Failed to add room");
     }
-
   };
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-3xl p-8 md:p-12">
-        {/* Header */}
         <div className="mb-10">
           <p className="uppercase tracking-[4px] text-xs text-indigo-600 mb-3">
             Workspace Management
@@ -132,9 +149,8 @@ export default function AddRoomPage() {
             />
           </div>
 
-          {/* Floor + Capacity */}
+          {/* Floor & Capacity */}
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Floor */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Floor
@@ -155,7 +171,6 @@ export default function AddRoomPage() {
               </select>
             </div>
 
-            {/* Capacity */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Capacity
@@ -167,19 +182,19 @@ export default function AddRoomPage() {
                   onClick={() =>
                     setCapacity((prev) => Math.max(1, prev - 1))
                   }
-                  className="h-12 w-12 rounded-xl border border-slate-300 text-xl font-semibold hover:bg-slate-100"
+                  className="h-12 w-12 rounded-xl border border-slate-300 hover:bg-slate-100"
                 >
-                  −
+                  -
                 </button>
 
-                <div className="text-2xl font-bold w-12 text-center">
+                <span className="text-2xl font-bold w-12 text-center">
                   {capacity}
-                </div>
+                </span>
 
                 <button
                   type="button"
                   onClick={() => setCapacity((prev) => prev + 1)}
-                  className="h-12 w-12 rounded-xl border border-slate-300 text-xl font-semibold hover:bg-slate-100"
+                  className="h-12 w-12 rounded-xl border border-slate-300 hover:bg-slate-100"
                 >
                   +
                 </button>
@@ -196,9 +211,9 @@ export default function AddRoomPage() {
             <input
               type="number"
               name="hourlyRate"
-              required
               min="1"
-              placeholder="50"
+              required
+              placeholder="5"
               className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -209,15 +224,15 @@ export default function AddRoomPage() {
               Amenities
             </label>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {amenities.map((amenity) => (
                 <button
                   key={amenity}
                   type="button"
                   onClick={() => toggleAmenity(amenity)}
                   className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all ${selectedAmenities.includes(amenity)
-                    ? "bg-indigo-600 text-white border-indigo-600"
-                    : "border-slate-300 hover:border-indigo-500"
+                      ? "bg-indigo-600 text-white border-indigo-600"
+                      : "border-slate-300 hover:border-indigo-500"
                     }`}
                 >
                   {amenity}
@@ -228,36 +243,34 @@ export default function AddRoomPage() {
 
           {/* Selected Amenities */}
           {selectedAmenities.length > 0 && (
-            <div>
-              <p className="text-sm font-medium text-slate-700 mb-2">
-                Selected Amenities
-              </p>
-
-              <div className="flex flex-wrap gap-2">
-                {selectedAmenities.map((item) => (
-                  <span
-                    key={item}
-                    className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {selectedAmenities.map((item) => (
+                <span
+                  key={item}
+                  className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm"
+                >
+                  {item}
+                </span>
+              ))}
             </div>
           )}
 
-          {/* Footer */}
-          <div className="flex justify-end gap-4 pt-4">
+          {/* Buttons */}
+          <div className="flex justify-end gap-4">
             <button
-              type="reset"
+              type="button"
+              onClick={() => {
+                setCapacity(4);
+                setSelectedAmenities([]);
+              }}
               className="px-6 py-3 rounded-xl border border-slate-300 hover:bg-slate-100"
             >
-              Cancel
+              Reset
             </button>
 
             <button
               type="submit"
-              className="px-8 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+              className="px-8 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700"
             >
               Save Room
             </button>

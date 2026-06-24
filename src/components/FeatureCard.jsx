@@ -63,7 +63,7 @@ export default function FeatureCard({ feature }) {
 
                 <div className="flex flex-wrap gap-2">
                     {
-                        feature.amenities.map(ame => <span className="flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-600">
+                        feature.amenities.map(ame => <span key={ame} className="flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-600">
                             <FaWifi />
                            {ame}
                         </span>)

@@ -1,19 +1,27 @@
 "use client";
+
+import { authClient } from "@/lib/auth-client";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Swal from "sweetalert2";
 import {
   FaWifi,
   FaUsers,
   FaBuilding,
-
+  FaCalendarCheck,
 } from "react-icons/fa";
+
 import BookingCard from "./BookingCard";
-import ManageRoomCard from "./ManageRoomCard";
-import toast from "react-hot-toast";
-import Swal from "sweetalert2";
-import { useRouter } from "next/navigation";
 
 export default function RoomDetails({ room }) {
-  const router=useRouter();
+  const router = useRouter();
+
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
+  const isOwner = user?.id === room?.ownerId;
+
   const handleDelete = async (id) => {
     const result = await Swal.fire({
       title: "Delete Room?",
@@ -23,7 +31,6 @@ export default function RoomDetails({ room }) {
       confirmButtonColor: "#ef4444",
       cancelButtonColor: "#6366f1",
       confirmButtonText: "Yes, Delete It",
-      cancelButtonText: "Cancel",
     });
 
     if (!result.isConfirmed) return;
@@ -39,10 +46,9 @@ export default function RoomDetails({ room }) {
       const data = await res.json();
 
       if (data.deletedCount > 0) {
-        await Swal.fire({
-          title: "Deleted!",
-          text: "Room deleted successfully.",
+        Swal.fire({
           icon: "success",
+          title: "Deleted Successfully",
           timer: 1500,
           showConfirmButton: false,
         });
@@ -50,10 +56,11 @@ export default function RoomDetails({ room }) {
         router.push("/rooms");
       }
     } catch (error) {
+      console.log(error);
+
       Swal.fire({
-        title: "Error",
-        text: "Failed to delete room.",
         icon: "error",
+        title: "Delete Failed",
       });
     }
   };
@@ -62,7 +69,7 @@ export default function RoomDetails({ room }) {
     <div className="bg-slate-50 min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left */}
+          {/* LEFT */}
           <div className="lg:col-span-2">
             <motion.img
               initial={{ opacity: 0 }}
@@ -77,28 +84,57 @@ export default function RoomDetails({ room }) {
                 {room.roomName}
               </h1>
 
-              <div className="flex gap-6 mt-5">
-                <div className="flex items-center gap-2">
+              {/* Stats */}
+              <div className="flex flex-wrap gap-4 mt-5">
+                <div className="flex items-center gap-2 bg-indigo-50 px-4 py-2 rounded-xl">
                   <FaBuilding />
                   {room.floor}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-xl">
                   <FaUsers />
                   Capacity: {room.capacity}
                 </div>
+
+                <div className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-xl">
+                  <FaCalendarCheck />
+                  Bookings: {room.bookingCount || 0}
+                </div>
               </div>
 
-              <div className="mt-8">
+              {/* Owner Controls */}
+              {isOwner && (
+                <div className="flex gap-4 mt-8">
+                  <Link
+                    href={`/rooms/edit/${room._id}`}
+                    className="px-5 py-3 bg-indigo-600 text-white rounded-xl"
+                  >
+                    Edit Room
+                  </Link>
+
+                  <button
+                    onClick={() =>
+                      handleDelete(room._id)
+                    }
+                    className="px-5 py-3 bg-red-600 text-white rounded-xl"
+                  >
+                    Delete Room
+                  </button>
+                </div>
+              )}
+
+              {/* Description */}
+              <div className="mt-10">
                 <h2 className="text-2xl font-semibold mb-3">
                   About Room
                 </h2>
 
-                <p className="text-gray-600">
+                <p className="text-gray-600 leading-relaxed">
                   {room.description}
                 </p>
               </div>
 
+              {/* Amenities */}
               <div className="mt-10">
                 <h2 className="text-2xl font-semibold mb-4">
                   Amenities
@@ -119,10 +155,12 @@ export default function RoomDetails({ room }) {
             </div>
           </div>
 
-          {/* Right */}
-          <div className="flex flex-col gap-2">
-            <div className="mb-b"> <ManageRoomCard room={room} handleDelete={handleDelete}></ManageRoomCard></div>
-            <BookingCard room={room}></BookingCard>
+          {/* RIGHT SIDE */}
+          <div>
+            <BookingCard
+              room={room}
+              user={user}
+            />
           </div>
         </div>
       </div>
