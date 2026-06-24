@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import RoomCard from "@/components/RoomCard";
+import { Spinner } from "@heroui/react";
 
 const amenitiesOptions = [
   "Wi-Fi",
@@ -144,8 +145,8 @@ export default function RoomsPage() {
 
       {/* Rooms */}
       {loading ? (
-        <div className="text-center py-20">
-          Loading rooms...
+        <div className="flex items-center gap-4">
+          <Spinner />
         </div>
       ) : rooms.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
