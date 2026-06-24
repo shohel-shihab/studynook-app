@@ -1,97 +1,114 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Image from "next/image";
-import { motion } from "motion/react";
-import { FaStar, FaWifi, FaArrowRight, FaTv } from "react-icons/fa";
-import { MdMeetingRoom } from "react-icons/md";
-import { HiUsers } from "react-icons/hi2";
 import Link from "next/link";
+import {
+  FaChair,
+  FaLayerGroup,
+  FaArrowRight,
+} from "react-icons/fa";
 
-export default function FeatureCard({ feature }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            whileHover={{ y: -8 }}
-            className="group overflow-hidden rounded-[30px] bg-white shadow-lg"
-        >
-            {/* Image */}
-            <div className="relative h-64 overflow-hidden">
-                <motion.div
-                    whileHover={{ scale: 1.08 }}
-                    transition={{ duration: 0.4 }}
-                    className="h-full w-full"
-                >
-                    <Image
-                        src={feature.image}
-                        alt="Room"
-                        fill
-                        className="object-cover"
-                    />
-                </motion.div>
-            </div>
+export default function FeatureCard({ room }) {
+  const amenities = room.amenities || [];
 
-            {/* Content */}
-            <div className="space-y-5 p-6">
-                {/* Rating */}
-                <div className="flex items-center gap-2">
-                    <FaStar className="text-yellow-400 text-lg" />
-                    <span className="text-lg font-medium">4.8</span>
-                </div>
+  const visibleAmenities = amenities.slice(0, 3);
 
-                {/* Title */}
-                <h2 className="text-2xl font-bold text-gray-900">
-                    {feature.roomName}
-                </h2>
+  const remaining = amenities.length - 3;
 
-                {/* Info */}
-                <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-gray-600">
-                        <MdMeetingRoom className="text-lg" />
-                        <span className="text-lg">{feature.floor}</span>
-                    </div>
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        y: 30,
+      }}
+      whileInView={{
+        opacity: 1,
+        y: 0,
+      }}
+      viewport={{ once: true }}
+      transition={{
+        duration: 0.5,
+      }}
+      whileHover={{
+        y: -8,
+      }}
+      className="group bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+    >
+      {/* Image */}
+      <div className="relative h-60 overflow-hidden">
+        <Image
+          src={room.image}
+          alt={room.roomName}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
+        />
 
-                    <div className="flex items-center gap-3 text-gray-600">
-                        <HiUsers className="text-lg" />
-                        <span className="text-lg">Capacity: {feature.capacity}</span>
-                    </div>
-                </div>
+        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-blue-600">
+          ${room.hourlyRate}/hr
+        </div>
+      </div>
 
-                {/* Amenities */}
+      {/* Content */}
+      <div className="p-6 flex flex-col flex-grow">
+        {/* Title */}
+        <h3 className="text-2xl font-bold text-gray-900">
+          {room.roomName}
+        </h3>
 
-                <div className="flex flex-wrap gap-2">
-                    {
-                        feature.amenities.map(ame => <span key={ame} className="flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-600">
-                            <FaWifi />
-                           {ame}
-                        </span>)
-                    }
-                </div>
+        {/* Description */}
+        <p className="text-gray-500 mt-3 line-clamp-3">
+          {room.description}
+        </p>
 
-                {/* Footer */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <h3 className="text-4xl font-bold text-indigo-600">
-                            $10
-                        </h3>
-                        <p className="text-gray-500">per hour</p>
-                    </div>
+        {/* Info */}
+        <div className="mt-5 space-y-3">
+          <div className="flex items-center gap-2 text-gray-600">
+            <FaLayerGroup className="text-blue-500" />
+            <span>
+              Floor {room.floor}
+            </span>
+          </div>
 
-                    <motion.button
-                        whileHover={{
-                            scale: 1.05,
-                            x: 5,
-                        }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-4 font-semibold text-white"
-                    >
-                        <Link href={`/rooms/${feature._id}`}>View Details</Link>
-                        <FaArrowRight />
-                    </motion.button>
-                </div>
-            </div>
-        </motion.div>
-    );
+          <div className="flex items-center gap-2 text-gray-600">
+            <FaChair className="text-blue-500" />
+            <span>
+              {room.capacity} people
+            </span>
+          </div>
+        </div>
+
+        {/* Amenities */}
+        <div className="flex flex-wrap gap-2 mt-5">
+          {visibleAmenities.map(
+            (item) => (
+              <span
+                key={item}
+                className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium"
+              >
+                {item}
+              </span>
+            )
+          )}
+
+          {remaining > 0 && (
+            <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-medium">
+              +{remaining} more
+            </span>
+          )}
+        </div>
+
+        {/* Button */}
+        <div className="mt-auto pt-6">
+          <Link
+            href={`/rooms/${room._id}`}
+            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-300"
+          >
+            View Details
+            <FaArrowRight className="text-sm" />
+          </Link>
+        </div>
+      </div>
+    </motion.div>
+  );
 }

@@ -4,8 +4,10 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-
 export default function AddRoomPage() {
+
+ 
+
   const router = useRouter();
 
   const [capacity, setCapacity] = useState(4);
@@ -231,8 +233,8 @@ export default function AddRoomPage() {
                   type="button"
                   onClick={() => toggleAmenity(amenity)}
                   className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all ${selectedAmenities.includes(amenity)
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "border-slate-300 hover:border-indigo-500"
+                    ? "bg-indigo-600 text-white border-indigo-600"
+                    : "border-slate-300 hover:border-indigo-500"
                     }`}
                 >
                   {amenity}

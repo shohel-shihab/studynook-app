@@ -46,10 +46,7 @@ export default function Navbar() {
           label: "My Bookings",
           href: "/my-bookings",
         },
-        {
-          label: "My Listings",
-          href: "/my-listings",
-        },
+        
       ]
       : []),
   ];
