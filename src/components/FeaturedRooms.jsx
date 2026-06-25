@@ -1,20 +1,14 @@
 import FeatureCard from "./FeatureCard";
-import RoomCard from "./RoomCard";
 
-async function getFeaturedRooms() {
+
+export default async function FeaturedRooms() {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER_URL}/featured-rooms`,
     {
       cache: "no-store",
     }
   );
-
-  return res.json();
-}
-
-export default async function FeaturedRooms() {
-  const rooms =
-    await getFeaturedRooms();
+  const rooms = await res.json();
 
   return (
     <section className="py-16">

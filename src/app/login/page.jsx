@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import toast from "react-hot-toast";
 
@@ -19,10 +19,8 @@ import { authClient } from "@/lib/auth-client";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const redirectTo =
-    searchParams.get("redirect") || "/";
+
 
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] =
@@ -58,7 +56,7 @@ export default function LoginPage() {
 
       toast.success("Login successful");
 
-      router.push(redirectTo);
+      router.push("/");
       router.refresh();
     } catch (err) {
       setError("Invalid email or password");
@@ -74,7 +72,7 @@ export default function LoginPage() {
 
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: redirectTo,
+        callbackURL:"/",
       });
     } catch {
       toast.error("Google login failed");
