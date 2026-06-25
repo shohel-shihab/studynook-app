@@ -1,13 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import BookingModal from "@/components/BookingModal";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 
 
 export default async function RoomDetailsPage({ params }) {
   const { id } = await params
+  const {token} = await auth.api.getToken({
+    headers:await headers()
+  })
+  
   const res = await fetch(
-    `http://localhost:5000/rooms/${id}`,
+    `http://localhost:5000/rooms/${id}`, {
+      headers:{
+        authorization:`Bearer ${token}`
+      }
+    },
     {
       cache: "no-store",
     }

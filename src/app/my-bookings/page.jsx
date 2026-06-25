@@ -17,14 +17,38 @@ export default function MyBookingsPage() {
   useEffect(() => {
     if (!session?.user?.id) return;
 
-    fetch(
-      `http://localhost:5000/my-bookings/${session.user.id}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setBookings(data);
+    const fetchBookings = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/my-bookings/${session.user.id}`
+        );
+
+        const data = await res.json();
+
+        console.log(
+          "Bookings Response:",
+          data
+        );
+
+        if (Array.isArray(data)) {
+          setBookings(data);
+        } else if (
+          data.bookings &&
+          Array.isArray(data.bookings)
+        ) {
+          setBookings(data.bookings);
+        } else {
+          setBookings([]);
+        }
+      } catch (error) {
+        console.error(error);
+        setBookings([]);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchBookings();
   }, [session]);
 
   if (loading) {
@@ -54,7 +78,6 @@ export default function MyBookingsPage() {
               key={booking._id}
               booking={booking}
             />
-            
           ))}
         </div>
       )}

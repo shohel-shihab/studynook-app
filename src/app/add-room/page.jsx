@@ -6,7 +6,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 export default function AddRoomPage() {
 
- 
+
 
   const router = useRouter();
 
@@ -60,11 +60,15 @@ export default function AddRoomPage() {
       bookingCount: 0,
     };
 
+
+    const { data: tokenData } = await authClient.token();
+   
     try {
       const res = await fetch("http://localhost:5000/rooms", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`
         },
         body: JSON.stringify(roomData),
       });
