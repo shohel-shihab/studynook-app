@@ -20,7 +20,7 @@ export default function MyBookingsPage() {
     const fetchBookings = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/my-bookings/${session.user.id}`
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/my-bookings/${session.user.id}`
         );
 
         const data = await res.json();

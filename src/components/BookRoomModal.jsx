@@ -77,7 +77,7 @@ export default function BookRoomModal({ room }) {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/bookings",
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings`,
         {
           method: "POST",
           headers: {

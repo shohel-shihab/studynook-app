@@ -64,7 +64,7 @@ export default function EditRoomForm({ room }) {
         };
 
         const res = await fetch(
-            `http://localhost:5000/rooms/${room._id}`,
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/rooms/${room._id}`,
             {
                 method: "PUT",
                 headers: {

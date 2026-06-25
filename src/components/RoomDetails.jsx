@@ -37,7 +37,7 @@ export default function RoomDetails({ room }) {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/rooms/${id}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/rooms/${id}`,
         {
           method: "DELETE",
         }

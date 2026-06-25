@@ -3,7 +3,7 @@ import RoomCard from "./RoomCard";
 
 async function getFeaturedRooms() {
   const res = await fetch(
-    "http://localhost:5000/featured-rooms",
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/featured-rooms`,
     {
       cache: "no-store",
     }

@@ -40,7 +40,7 @@ export default function RoomsPage() {
     }
 
     const res = await fetch(
-      `http://localhost:5000/rooms?${params.toString()}`
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/rooms?${params.toString()}`
     );
 
     const data = await res.json();
